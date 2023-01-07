@@ -24,7 +24,7 @@ namespace Tuple
             
             sb.AppendLine($"{Item1} -> {Item2}");
             
-            return sb.ToString().Trim();
+            return sb.ToString().TrimEnd();
         }
     }
 }
