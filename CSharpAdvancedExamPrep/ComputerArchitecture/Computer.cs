@@ -1,40 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace ComputerArchitecture
 {
     public class Computer
     {
-        private List<CPU> multiprocessor;
-        private string model;
-        private int capacity;
-
         public Computer(string model, int capacity)
         {
-            Model = model;
             Capacity = capacity;
+            Model = model;
             Multiprocessor = new List<CPU>();
         }
 
-        List<CPU> Multiprocessor 
-        {
-            get { return multiprocessor; }
-            set { multiprocessor = value; }
-        }
+        public List<CPU> Multiprocessor { get; set; }
 
-        public string Model 
-        {
-            get { return model; }
-            set { model = value; } 
-        }
-        public int Capacity 
-        { 
-            get { return capacity; }
-            set { capacity = value; }
-        }
+        public int Capacity { get; set; }
 
-        public int Count { get => Multiprocessor.Count; }
+        public string Model { get; set; }
+
+        public int Count { get { return Multiprocessor.Count; } }
 
         public void Add(CPU cpu)
         {
@@ -46,41 +33,62 @@ namespace ComputerArchitecture
 
         public bool Remove(string brand)
         {
-            CPU brandToRemove = Multiprocessor.FirstOrDefault(b => b.Brand == brand);
-
-            if (brandToRemove != null)
+            CPU cpuToRemove = Multiprocessor.FirstOrDefault(c => c.Brand == brand);
+            if (cpuToRemove != null)
             {
-                Multiprocessor.Remove(brandToRemove);
-                return true;
+                return Multiprocessor.Remove(cpuToRemove);
             }
+
             return false;
+
+            //for (int i = 0; i < MultiProcessor.Count; i++)
+            //{
+            //    if (MultiProcessor[i].Brand == brand)
+            //    {
+            //        MultiProcessor.RemoveAt(i);
+            //        return true;
+            //    }
+            //}
+
+            //return false;
         }
 
         public CPU MostPowerful()
         {
-            CPU mostPowerful = Multiprocessor.MaxBy(c => c.Frequency);
+            if (Multiprocessor.Count == 0)
+            {
+                return null;
+            }
+
+            CPU mostPowerful = Multiprocessor[0];
+
+            foreach (var cpu in Multiprocessor)
+            {
+                if (cpu.Frequency > mostPowerful.Frequency)
+                {
+                    mostPowerful = cpu;
+                }
+            }
+
             return mostPowerful;
         }
 
         public CPU GetCPU(string brand)
         {
-            CPU getCPU = Multiprocessor.FirstOrDefault(c=>c.Brand == brand);
-            if (getCPU != null)
-            {
-                return getCPU;
-            }
-            return null;
+            return Multiprocessor.FirstOrDefault(c => c.Brand == brand);
         }
 
         public string Report()
         {
-            StringBuilder sb =new StringBuilder();
-            sb.AppendLine($"CPUs in the Computer {Model}:");
-            foreach (var item in Multiprocessor)
+            StringBuilder result = new StringBuilder();
+
+            result.AppendLine($"CPUs in the Computer {Model}:");
+            foreach (var cpu in Multiprocessor)
             {
-                sb.AppendLine(item.ToString());
+                result.AppendLine(cpu.ToString());
             }
-            return sb.ToString().Trim();
+
+            return result.ToString().Trim();
         }
     }
 }
