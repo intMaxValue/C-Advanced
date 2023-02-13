@@ -41,16 +41,6 @@ namespace ComputerArchitecture
 
             return false;
 
-            //for (int i = 0; i < MultiProcessor.Count; i++)
-            //{
-            //    if (MultiProcessor[i].Brand == brand)
-            //    {
-            //        MultiProcessor.RemoveAt(i);
-            //        return true;
-            //    }
-            //}
-
-            //return false;
         }
 
         public CPU MostPowerful()
