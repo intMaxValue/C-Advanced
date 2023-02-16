@@ -1,79 +1,97 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 
-
-namespace _01.MealPlan
+namespace MealPlan
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Dictionary<string, int> table = new Dictionary<string, int>();
-            table.Add("salad", 350);
-            table.Add("soup", 490);
-            table.Add("pasta", 680);
-            table.Add("steak", 790);
-
             Queue<string> meals = new Queue<string>(Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries));
-            Stack<int> calories = new Stack<int>
-                (Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse));
-            int mealsCount = 0;
-            int leftover = 0;
-            bool next = true;
-            while (meals.Any() && calories.Any())
+
+            Stack<int> calories = new Stack<int>(Console.ReadLine().Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse));
+
+            Dictionary<string, int> table = new Dictionary<string, int>()
             {
-                string meal = meals.Peek();
-                int currCal = calories.Peek();
-                int currMealCal = 0;
+                { "salad" , 350},
+                { "soup", 490 },
+                { "pasta", 680 },
+                { "steak", 790},
+            };
 
-                if (next)
-                {
-                    currMealCal = table[meal];
-                }
-                else
-                {
-                    currMealCal = leftover;
-                }
+            int mealsSum = meals.Select(m => table[m]).Sum();
+            int caloriesSum = calories.Sum();
+            int initialMealsCount = meals.Count();
+
+            string currMeal = string.Empty;
+            int mealValue = 0;
 
 
-                if (currCal > currMealCal)
-                {
-                    meals.Dequeue();
-                    calories.Pop();
-                    currCal -= currMealCal;
-                    calories.Push(currCal);
-                    mealsCount++;
-                    next = true;
-                }
-                else
-                {
-                    calories.Pop();
-                    currMealCal -= currCal;
-                    leftover = currMealCal;
-                    next = false;
+            if (mealsSum > caloriesSum)
+            {
+                List<string> mealsLeft = new List<string>();
 
-                    if (calories.Count == 0)
+                for (int i = 0; i < meals.Count; i++)
+                {
+                    currMeal = meals.Dequeue();
+                    mealValue = table[currMeal];
+                    i--;
+                    caloriesSum -= mealValue;
+
+                    if (caloriesSum < 0)
                     {
-                        meals.Dequeue();
-                        mealsCount++;
+                        for (int j = i + 1; j < meals.Count; j++)
+                        {
+                            currMeal = meals.Dequeue();
+                            j--;
+                            mealsLeft.Add(currMeal);
+                            
+                        }
                     }
-
                 }
 
-            }
+                Console.WriteLine($"John ate enough, he had {initialMealsCount - mealsLeft.Count} meals.");
+                Console.WriteLine($"Meals left: {string.Join(", ", mealsLeft)}.");
 
-            if (meals.Count <= 0)
-            {
-                Console.WriteLine($"John had {mealsCount} meals.");
-                Console.WriteLine($"For the next few days, he can eat {string.Join(", ", calories)} calories.");
             }
-            else if (calories.Count <= 0)
+            else
             {
-                Console.WriteLine($"John ate enough, he had {mealsCount} meals.");
-                Console.WriteLine($"Meals left: {string.Join(", ", meals)}.");
-            }
+                int currDayCal = calories.Pop();
 
+                for (int i = 0; i < meals.Count; i++)
+                {
+                    currMeal = meals.Dequeue();
+                    mealValue = table[currMeal];
+                    currDayCal -= mealValue;
+                    i--;
+
+                    if (currDayCal < 0)
+                    {
+                        currDayCal += calories.Pop();
+                        
+                    }
+                }
+
+                if (calories.Any())
+                {
+                    if (currDayCal > 0)
+                    {
+                        calories.Push(currDayCal);
+                    }
+                    Console.WriteLine($"John had {initialMealsCount} meals.");
+                    Console.Write($"For the next few days, he can eat {string.Join(", ", calories)} calories.");
+
+                }
+                else
+                {
+                    Console.WriteLine($"John had {initialMealsCount} meals.");
+                    Console.Write($"For the next few days, he can eat {currDayCal} calories.");
+                }
+            }
         }
     }
 }
