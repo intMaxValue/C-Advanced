@@ -63,8 +63,8 @@ namespace BakeryShop
                 Console.WriteLine($"{item.Key}: {item.Value}");
             }
 
-            string waterLeft = !water.Any() ? "none" : string.Join(", ", water);
-            string flourLeft = !flour.Any() ? "none" : string.Join(", ", flour);
+            string waterLeft = !water.Any() ? "None" : string.Join(", ", water);
+            string flourLeft = !flour.Any() ? "None" : string.Join(", ", flour);
 
             Console.WriteLine($"Water left: {waterLeft}");
             Console.WriteLine($"Flour left: {flourLeft}");
